@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Card Class Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 40px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #0077cc;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        input[type="file"] {
+            padding: 10px;
+        }
+        
+        img.preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        button {
+            background-color: #0077cc;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        
+        button:hover {
+            background-color: #005fa3;
+        }
+        
+        #summary-output {
+            margin-top: 20px;
+            background: #cdcdce57;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccccccad;
+            text-align: center;
+        }
+        
+        #resultText {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Card Class Classifier</h1>
+
+        <form id="classify">
+            <input type="file" id="imageInput" accept="image/*" required />
+            <img id="preview" class="preview" />
+            <button id="submit" type="submit">Predict</button>
+        </form>
+
+        <div id="summary-output">
+            <p id="resultText">Predicted class will appear here.</p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById("classify");
+        const imageInput = document.getElementById("imageInput");
+        const preview = document.getElementById("preview");
+        const resultText = document.getElementById("resultText");
+
+        imageInput.addEventListener("change", () => {
+            const file = imageInput.files[0];
+            if (file) {
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = "block";
+            }
+        });
+
+        form.addEventListener("submit", async(e) => {
+            e.preventDefault();
+            const file = imageInput.files[0];
+            if (!file) {
+                alert("Please select an image.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            resultText.innerText = "Predicting...";
+
+            try {
+                const response = await fetch("/predict/", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                const data = await response.json();
+                if (data.prediction) {
+                    resultText.innerText = `Prediction: ${data.prediction}`;
+                } else {
+                    resultText.innerText = "Error: Could not get prediction.";
+                }
+            } catch (error) {
+                resultText.innerText = "Error occurred while predicting.";
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+
+</html>
