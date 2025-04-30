@@ -13,6 +13,7 @@ from PIL import Image
 
 
 # Folder inside your workspace to store the model
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_DIR = "ImageClassification"
 MODEL_ZIP = os.path.join(MODEL_DIR)
@@ -51,10 +52,8 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, ".")
 templates = Jinja2Templates(directory=TEMPLATE_DIR)
 
 
-# Load the saved model
-
-
 # Load class labels from folder names 
+
 def load_card_classes(file_path=os.path.join(BASE_DIR, "class.txt")):
     with open(file_path, "r") as file:
         card_classes = [line.strip().lower() for line in file.readlines()]
